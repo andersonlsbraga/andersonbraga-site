@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="300" viewBox="0 0 600 300">
+  <defs>
+    <symbol id="whatsapp" viewBox="0 0 24 24">
+      <path d="M20.6 3.5A11.1 11.1 0 0 0 3.2 16.8L1.7 22.4l5.8-1.5A11.1 11.1 0 0 0 20.6 3.5Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+      <path d="M7.6 6.2c-.5 0-1.7 1.2-1.7 2.7 0 2.7 4.4 7.4 7.7 8.4 1.6.5 3.4-.5 3.8-1.5l.2-1.1-3.1-1.5-1.3 1.4c-1.6-.6-3.6-2.4-4.2-3.9l1-1.4-1.4-3.1Z" fill="currentColor"/>
+    </symbol>
+  </defs>
+  <use href="#whatsapp" x="366" y="38" width="60" height="60" color="#8cbea0" opacity=".9" transform="rotate(-12 396 68)"/>
+  <use href="#whatsapp" x="510" y="58" width="46" height="46" color="#b0cdbb" opacity=".7" transform="rotate(10 533 81)"/>
+  <use href="#whatsapp" x="458" y="212" width="54" height="54" color="#8cbea0" opacity=".8" transform="rotate(-6 485 239)"/>
+</svg>

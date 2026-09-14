@@ -1,0 +1,161 @@
+@font-face { font-family: Montserrat; src: url("assets/montserrat-400.ttf") format("truetype"); font-weight: 400; font-display: swap; }
+@font-face { font-family: Montserrat; src: url("assets/montserrat-600.ttf") format("truetype"); font-weight: 500 700; font-display: swap; }
+@font-face { font-family: Montserrat; src: url("assets/montserrat-900.ttf") format("truetype"); font-weight: 800 900; font-display: swap; }
+:root { color-scheme: dark; --background: #0a0b0d; --surface: #101216; --scrim: #0b0c10; --bezel-seat: #15171c; --line: #2d2f34; --metal-spec: #fbf9f4; --metal-050: #eef0f2; --metal-100: #dcdfe3; --metal-200: #cdd0d5; --metal-300: #babec4; --metal-400: #a8adb4; --metal-500: #9ea4ac; --metal-600: #828790; --metal-700: #6b7078; --metal-800: #565b63; --metal-rim: #5e636b; --metal-ink: #0c0e11; --white: #fafafa; --text-bright: #dcdee2; --text-strong: #d1d3d7; --text-head: #b5b8bd; --text-body: #b8babf; --muted: #a4a7ac; --soft: #94979d; --dim: #7c8087; }
+* { box-sizing: border-box; }
+body { margin: 0px; background: var(--background); color: var(--white); font-family: Montserrat, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+.icon-library { position: absolute; width: 0px; height: 0px; overflow: hidden; }
+.background-atmosphere, .background-stars { position: fixed; inset: 0px; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.background-atmosphere { background: radial-gradient(at 8% 18%, rgba(170, 180, 196, 0.11) 0%, rgba(170, 180, 196, 0) 52%), radial-gradient(at 88% 7%, rgba(232, 220, 194, 0.086) 0%, rgba(232, 220, 194, 0) 46%); }
+.background-stars { opacity: 1; mask-image: linear-gradient(90deg, rgb(0, 0, 0) 0%, rgba(0, 0, 0, 0.867) 30%, rgba(0, 0, 0, 0.667) 50%, rgba(0, 0, 0, 0.867) 70%, rgb(0, 0, 0) 100%); }
+.page { position: relative; z-index: 1; width: min(100% - 42px, 620px); margin: 0px auto; padding: 54px 0px 28px; }
+.profile { text-align: center; }
+.portrait-ring { width: 120px; height: 120px; padding: 4px; margin: 0px auto 26px; border: 3px solid transparent; border-radius: 50%; background: linear-gradient(var(--bezel-seat),var(--bezel-seat)) padding-box,conic-gradient(from 315deg,var(--metal-spec) 0deg,var(--metal-100) 40deg,var(--metal-500) 80deg,var(--metal-700) 130deg,var(--metal-300) 175deg,var(--metal-050) 205deg,var(--metal-600) 245deg,var(--metal-800) 300deg,var(--metal-200) 340deg,var(--metal-spec) 360deg) border-box; box-shadow: rgba(0, 0, 0, 0.35) 0px 10px 26px, rgba(186, 190, 196, 0.027) 0px 0px 0px 8px, rgba(255, 255, 255, 0.08) 0px 0px 0px 1px inset; }
+.portrait { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center center; border-radius: 50%; }
+.eyebrow { font-size: 15px; letter-spacing: 6px; font-weight: 400; margin: 0px 0px 12px; padding-left: 6px; color: var(--text-bright); }
+h1 { font-size: clamp(24px, 6.5vw, 40px); letter-spacing: 4.5px; line-height: 1.2; font-weight: 900; margin: 0px; white-space: nowrap; }
+.bio { font-size: 15px; color: var(--soft); margin: 24px 0px 0px; line-height: 1.7; }
+.bio strong { font-weight: 500; color: var(--text-strong); }
+.bio span { padding: 0px 3px; }
+.section-heading { display: flex; align-items: center; gap: 14px; margin: 34px 0px; }
+.rule { height: 1px; flex: 1 1 0%; background: var(--line); }
+.section-heading h2 { display: flex; align-items: center; gap: 10px; margin: 0px; color: var(--text-head); font-size: 11px; letter-spacing: 2.1px; font-weight: 700; white-space: nowrap; }
+.icon { width: 17px; height: 17px; flex-shrink: 0; fill: none; stroke: currentcolor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.flame { color: var(--metal-200); width: 18px; height: 18px; fill: url(#metal-flame) var(--metal-200); stroke-width: 0; filter: drop-shadow(rgba(0, 0, 0, 0.5) 0px 1px 1px); }
+.cards { display: grid; gap: 15px; }
+.link-card { position: relative; isolation: isolate; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 190px; padding: 24px 22px 24px 26px; border: 1px solid rgba(205, 211, 220, 0.06); border-radius: 13px; text-decoration: none; color: inherit; overflow: hidden; background: var(--surface); transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s; }
+.card-art { position: absolute; z-index: -2; inset: 0px 0px 0px 20%; background-repeat: no-repeat; background-size: auto 100%; background-position: 100% 0px; opacity: 1; transition: transform 0.4s; filter: saturate(1.08); mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0) 0px, rgb(0, 0, 0) 48%); }
+.link-card::before { content: ""; position: absolute; z-index: -1; inset: 0px; background: linear-gradient(90deg, rgba(11, 12, 16, 0.96) 0%, rgba(11, 12, 16, 0.867) 36%, rgba(11, 12, 16, 0.22) 69%, rgba(11, 12, 16, 0.03) 100%); }
+.card-carrosseis .card-art { background-image: url("assets/card-fabrica-carrosseis.jpg"); background-size: cover; background-position: 75% calc(42% - 38px); }
+.card-sites .card-art { inset: 0px 0px 0px auto; width: 35%; min-width: 150px; background-image: url("assets/card-maquina-de-sites.jpg"); background-size: cover; background-position: center 53%; opacity: 1; mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.6) 24%, rgb(0, 0, 0) 48%, rgb(0, 0, 0) 80%, rgba(0, 0, 0, 0.6) 94%, transparent 100%); }
+@media (max-width: 480px) {
+  .card-sites .card-art { background-position: center 64%; }
+}
+.card-combo .card-art { inset: -27.5% 0px auto auto; height: 155%; aspect-ratio: 826 / 666; background-image: url("assets/card-combo-ia.jpg"); background-size: 100% 100%; background-position: center center; opacity: 0.9; mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.333) 20%, rgb(0, 0, 0) 42%, rgb(0, 0, 0) 80%, transparent 100%); }
+.card-support { background: linear-gradient(115deg, rgb(16, 21, 19) 15%, rgb(20, 43, 34) 100%); border-color: rgba(102, 102, 102, 0.35); box-shadow: rgba(184, 184, 184, 0.07) 0px 1px 0px inset; }
+.card-support .card-art { inset: 0px; background-image: url("assets/banner-whatsapp.svg?v=5"); background-size: auto 115%; background-position: right center; }
+.card-support::before { background: linear-gradient(90deg, rgba(11, 12, 16, 0.92) 0%, rgba(11, 12, 16, 0.7) 36%, rgba(11, 12, 16, 0.1) 69%, transparent 100%); }
+.card-support .card-description .icon { color: rgb(145, 188, 162); }
+.link-card.card-support:hover, .link-card.card-support:focus-visible { border-color: rgb(144, 144, 144); box-shadow: rgba(184, 184, 184, 0.15) 0px 1px 0px inset, rgba(0, 0, 0, 0.35) 0px 8px 25px; }
+.card-content { min-width: 0px; }
+.card-labels { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.tag { display: inline-block; padding: 4px 9px; border: 1px solid rgba(186, 190, 196, 0.37); border-radius: 4px; background: linear-gradient(rgba(201, 206, 217, 0.15), rgba(201, 206, 217, 0.06)); box-shadow: rgba(255, 255, 255, 0.1) 0px 1px 0px inset; color: var(--metal-200); font-size: 11px; font-weight: 700; letter-spacing: 1px; white-space: nowrap; }
+.card-carrosseis .tag { border-color: rgb(255, 69, 69); background: linear-gradient(rgb(229, 34, 34), rgb(189, 16, 16)); color: rgb(255, 255, 255); }
+.card-sites .tag, .card-support .tag { border-color: rgb(72, 117, 99); background: linear-gradient(rgb(37, 79, 64), rgb(24, 56, 46)); color: rgb(226, 238, 231); }
+.card-combo .tag { border-color: rgb(72, 107, 145); background: linear-gradient(rgb(37, 71, 107), rgb(24, 47, 75)); color: rgb(226, 234, 244); }
+.category { color: var(--muted); font-size: 10px; letter-spacing: 1px; font-weight: 600; white-space: nowrap; }
+.link-card h3 { margin: 0px 0px 7px; font-size: 29px; font-weight: 900; letter-spacing: 0.1px; line-height: 1.1; }
+.card-support h3 { font-size: 24px; max-width: 290px; }
+.card-description { display: flex; align-items: center; gap: 6px; color: var(--text-body); font-size: 13px; line-height: 1.5; margin: 0px; }
+.cta { position: relative; isolation: isolate; display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex-shrink: 0; min-height: 40px; min-width: 174px; padding: 12px 13px; background: linear-gradient(180deg,var(--metal-spec) 0%,var(--metal-050) 9%,var(--metal-100) 34%,var(--metal-200) 60%,var(--metal-400) 74%,var(--metal-300) 84%,var(--metal-500) 100%); border: 1px solid var(--metal-rim); border-radius: 8px; color: var(--metal-ink); font-size: 10px; letter-spacing: 0.65px; font-weight: 900; white-space: nowrap; text-shadow: rgba(255, 255, 255, 0.3) 0px 1px 0px; box-shadow: rgba(255, 253, 248, 0.85) 0px 1px 0px inset, rgba(255, 255, 255, 0.12) 0px 0px 0px 1px inset, rgba(69, 74, 82, 0.4) 0px -1px 0px inset, rgba(0, 0, 0, 0.5) 0px 1px 2px, rgba(0, 0, 0, 0.35) 0px 6px 18px; transition: box-shadow 0.2s; }
+.cta::before { content: ""; position: absolute; z-index: -1; inset: 0px; border-radius: inherit; background: linear-gradient(rgb(255, 255, 255) 0%, rgb(246, 247, 248) 9%, rgb(231, 234, 237) 34%, rgb(210, 214, 219) 60%, rgb(180, 185, 192) 74%, rgb(203, 207, 213) 84%, rgb(170, 176, 184) 100%); opacity: 0; transition: opacity 0.2s; }
+.cta span { font-size: 15px; line-height: 10px; }
+.link-card:hover { border-color: rgba(186, 190, 196, 0.3); transform: translateY(-2px); box-shadow: rgba(0, 0, 0, 0.35) 0px 8px 25px; }
+.link-card:hover .cta { box-shadow: rgb(255, 255, 255) 0px 1px 0px inset, rgba(255, 255, 255, 0.18) 0px 0px 0px 1px inset, rgba(69, 74, 82, 0.4) 0px -1px 0px inset, rgba(0, 0, 0, 0.5) 0px 2px 4px, rgba(0, 0, 0, 0.45) 0px 8px 22px; }
+.link-card:hover .cta::before { opacity: 1; }
+.link-card:hover .card-art { transform: scale(1.035); }
+.link-card:focus-visible { outline: 3px solid var(--metal-100); outline-offset: 5px; }
+.footer { margin-top: 38px; text-align: center; color: var(--dim); }
+.footer-brand { font-size: 10px; font-weight: 700; letter-spacing: 3px; }
+.footer p { font-size: 10px; margin: 9px 0px 0px; color: var(--dim); }
+@media (max-width: 600px) {
+  .page { padding-top: 38px; }
+  .portrait-ring { width: 106px; height: 106px; }
+  .link-card { min-height: 174px; padding: 20px 18px 20px 23px; }
+  .link-card h3 { font-size: 27px; }
+  .card-support h3 { font-size: 23px; max-width: 240px; }
+  .cta { min-width: 154px; font-size: 9px; padding: 11px; }
+  .category { font-size: 9px; }
+  .card-labels { gap: 8px; }
+  .tag { font-size: 10px; }
+  .card-description { font-size: 12px; }
+  .bio { font-size: 14px; }
+}
+@media (max-width: 480px) {
+  .page { width: calc(100% - 28px); padding-top: 32px; }
+  .portrait-ring { width: 96px; height: 96px; margin-bottom: 23px; }
+  .eyebrow { font-size: 12px; letter-spacing: 5px; }
+  h1 { font-size: clamp(21px, 6.1vw, 29px); letter-spacing: 2.6px; }
+  .bio { font-size: 11px; margin-top: 19px; }
+  .section-heading { gap: 9px; margin: 29px 0px 24px; }
+  .section-heading h2 { font-size: 8px; letter-spacing: 1.5px; gap: 7px; }
+  .flame { width: 14px; height: 14px; }
+  .link-card { min-height: 150px; padding: 19px 13px; gap: 6px; border-radius: 11px; }
+  .cards { gap: 12px; }
+  .link-card h3 { font-size: 21px; letter-spacing: -0.4px; }
+  .card-support h3 { font-size: 21px; max-width: 185px; }
+  .tag { font-size: 8px; padding: 4px 6px; letter-spacing: 0.6px; }
+  .category { font-size: 7px; letter-spacing: 0.4px; }
+  .card-labels { gap: 6px; }
+  .card-description { font-size: 10px; gap: 4px; }
+  .card-description .icon { width: 14px; height: 14px; }
+  .cta { min-width: 115px; min-height: 36px; padding: 10px 8px; font-size: 7px; letter-spacing: 0.2px; gap: 4px; border-radius: 6px; text-shadow: none; }
+  .footer { margin-top: 30px; }
+}
+@media (max-width: 359px) {
+  .link-card { padding: 17px 11px; }
+  .link-card h3, .card-support h3 { font-size: 18px; }
+  .card-description { font-size: 9px; }
+  .cta { min-width: 103px; font-size: 6px; }
+  .category { font-size: 6px; }
+  .section-heading h2 { letter-spacing: 1px; }
+}
+.card-carrosseis h3, .card-sites h3, .card-combo h3, .card-support h3 { font-size: 25px; line-height: 1.15; text-wrap: balance; }
+.card-sites .cta { width: max-content; min-width: 0px; min-height: 44px; font-size: 9px; letter-spacing: 0.4px; gap: 8px; }
+.cta .cta-label { font-size: inherit; line-height: 1.2; white-space: nowrap; flex-shrink: 0; }
+.cta .cta-first-line, .cta .cta-last-line { font-size: inherit; line-height: inherit; white-space: nowrap; }
+.cta .cta-last-line > span { font-size: 1.4em; line-height: 1; vertical-align: -0.05em; margin-left: 4px; }
+.course-version { white-space: nowrap; color: var(--metal-100); }
+@supports ((-webkit-background-clip:text) or (background-clip:text)) {
+  .course-version { background: linear-gradient(rgb(255, 255, 255) 16%, rgb(234, 237, 240) 32%, rgb(169, 174, 182) 55%, rgb(228, 232, 236) 72%, rgb(251, 250, 246) 88%) text; color: transparent; -webkit-text-fill-color: transparent; filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 1px 0px); }
+}
+.card-description > span { min-width: 0px; }
+@media (max-width: 600px) {
+  .card-carrosseis h3, .card-sites h3, .card-combo h3, .card-support h3 { font-size: 23px; }
+  .card-sites .cta { width: 154px; min-width: 154px; min-height: 40px; letter-spacing: 0.2px; }
+  .card-sites .cta-label { white-space: normal; text-align: center; line-height: 1.35; }
+  .card-sites .cta-first-line { display: block; }
+}
+@media (max-width: 480px) {
+  .card-carrosseis h3, .card-sites h3, .card-combo h3, .card-support h3 { font-size: 20px; }
+  .card-sites .cta { width: 115px; min-width: 115px; min-height: 36px; font-size: 7px; }
+  .card-sites .card-description { font-size: 9px; }
+  .card-description { align-items: flex-start; }
+  .card-description .icon { margin-top: 1px; }
+}
+@media (max-width: 359px) {
+  .card-carrosseis h3, .card-sites h3, .card-combo h3, .card-support h3 { font-size: 17px; }
+  .card-sites .cta { width: 103px; min-width: 103px; font-size: 6.5px; }
+}
+@media (forced-colors: active) {
+  .course-version { background: none; -webkit-text-fill-color: currentcolor; color: canvastext; filter: none; }
+  .cta::before { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after { transition: none !important; scroll-behavior: auto !important; }
+}/* Anderson Braga: foto no card do combo ocupa a altura do card (no modelo era um logo ampliado) */
+.card-combo .card-art { inset: 0px 0px 0px auto; height: 100%; background-size: cover; background-position: center 30%; opacity: 1; }
+/* Enquadramento das fotos do Anderson */
+.card-sites .card-art { background-position: center 12%; }
+.card-carrosseis .card-art { background-position: 70% center; }
+.card-combo .card-art { background-position: center 0%; }
+@media (max-width: 480px) {
+  .card-sites .card-art { background-position: center 14%; }
+}
+/* Rosto acima do botão */
+.card-sites .card-art { background-position: center 4%; }
+.card-combo .card-art { background-size: auto 135%; background-position: center 8%; aspect-ratio: auto; width: 45%; min-width: 170px; }
+@media (max-width: 480px) {
+  .card-sites .card-art { background-position: center 4%; }
+}
+.card-sites .card-art { background-position: center 17%; }
+@media (max-width: 480px) { .card-sites .card-art { background-position: center 17%; } }
+.card-combo .card-art { width: 40%; mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.6) 24%, rgb(0, 0, 0) 48%, rgb(0, 0, 0) 80%, rgba(0, 0, 0, 0.6) 94%, transparent 100%); }
+/* Botão no canto inferior direito de todos os cards (não cobre o rosto) */
+.link-card .cta { align-self: flex-end; }
+/* Combo em breve: preto e branco e sem clique */
+.link-card.is-soon { filter: grayscale(1); cursor: default; }
+.link-card.is-soon:hover { transform: none; border-color: rgba(205, 211, 220, 0.06); box-shadow: none; }
+.link-card.is-soon:hover .card-art { transform: none; }
+.link-card.is-soon:hover .cta::before { opacity: 0; }
+.link-card.is-soon .cta { opacity: 1; }
