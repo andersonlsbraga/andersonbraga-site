@@ -211,9 +211,16 @@ svg.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stro
 #bcrumb .sep{color:var(--fg-3);margin:0 2px}
 #bcrumb b{font-size:13px;overflow:hidden;text-overflow:ellipsis;padding:0 6px}
 #app.video #bcrumb,#app.video #backBtn{display:none!important}
-#backBtn{position:absolute;z-index:6;display:inline-flex;align-items:center;gap:6px;padding:8px 14px 8px 10px;border-radius:999px;font-weight:600;font-size:13.5px;color:var(--accent);white-space:nowrap;max-width:min(320px,70vw);transition:transform .12s,background .15s}
-#backBtn span{overflow:hidden;text-overflow:ellipsis}
-#backBtn:hover{background:var(--accent);color:var(--on-accent);transform:translateX(-2px)}
+#backBtn{--bw:96px;position:absolute;z-index:6;width:var(--bw);height:calc(var(--bw) * 1.32);padding:calc(var(--bw) * .07);border-radius:calc(var(--bw) * .17);
+  background:var(--surface);box-shadow:0 0 0 1px var(--line),0 10px 26px rgba(0,0,0,.16);transform:rotate(-4deg);transition:transform .2s cubic-bezier(.2,.9,.3,1.3),box-shadow .2s}
+#backBtn .bb-in{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--bw) * .04);width:100%;height:100%;border-radius:calc(var(--bw) * .12);color:#fff;
+  background:radial-gradient(120% 90% at 30% 15%,rgba(255,255,255,.28),transparent 55%),linear-gradient(150deg,var(--c-blue),var(--c-indigo) 55%,var(--c-purple))}
+#backBtn svg{width:46%;height:auto;fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 2px 3px rgba(0,0,0,.25))}
+#backBtn b{font-size:calc(var(--bw) * .15);font-weight:800;letter-spacing:.01em;line-height:1}
+#backBtn small{font-size:calc(var(--bw) * .095);opacity:.85;max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.1}
+#backBtn:hover{transform:rotate(0deg) scale(1.06);box-shadow:0 0 0 1px var(--line),0 16px 34px rgba(0,0,0,.22)}
+#backBtn:hover svg{animation:spinback .6s ease}
+@keyframes spinback{from{transform:rotate(0)}to{transform:rotate(-360deg)}}
 @media (max-width:860px){#bcrumb{top:auto;bottom:64px;max-width:calc(100% - 24px)}}
 .fs-box{display:inline-flex;align-items:center;gap:2px;background:var(--line);border-radius:8px;padding:2px}
 .fs-box input{width:54px;border:0;background:var(--surface);border-radius:6px;text-align:center;padding:5px 2px;font:inherit;font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--fg);outline:none}
@@ -509,7 +516,7 @@ kbd{font-family:var(--f-mono);font-size:11px;padding:2px 6px;border-radius:5px;b
           <button class="addh" id="addR" hidden title="Próxima etapa com seta (⌘ →)" aria-label="Criar próxima etapa à direita"></button>
           <button class="addh" id="addB" hidden title="Explicação embaixo (⌘ ↓)" aria-label="Criar explicação embaixo"></button>
           <nav id="bcrumb" class="glass" hidden aria-label="Blocos abertos"></nav>
-          <button id="backBtn" class="glass" hidden type="button"></button>
+          <button id="backBtn" hidden type="button"></button>
           <div id="vstage" hidden><canvas id="vcv" aria-label="Vídeo do quadro"></canvas></div>
           <div id="vbar" class="glass" hidden role="toolbar" aria-label="Controles do vídeo"></div>
         </div>
@@ -1132,19 +1139,45 @@ function isVeiled(e) {
   if (LINEAR.includes(e.type)) { const A = e.startId && byId(e.startId), B = e.endId && byId(e.endId); return !!((A && A.veil && !S.revealed.has(A.id)) || (B && B.veil && !S.revealed.has(B.id))); }
   return false;
 }
-function drawVeiled(c, e) {
+function veilColor(e) {
+  if (e.type === 'tool') return tileColors(e.tool).bg;
+  if (e.type === 'note') return PAL[e.fill] || PAL.yellow;
+  if (['rect', 'ellipse', 'diamond'].includes(e.type)) return PAL[e.fill !== 'none' ? e.fill : e.stroke] || PAL.accent;
+  if (e.type === 'text' || e.type === 'pen') return PAL[e.stroke] || PAL.accent;
+  return PAL.accent;
+}
+function drawVeiled(c, e, author) {
   const z = S.cam.z;
-  c.save(); if (FILTER_OK) { c.filter = `blur(${Math.max(26, 34 * z).toFixed(0)}px)`; c.globalAlpha = 0.55; } else c.globalAlpha = 0.06;
+  // o próprio bloco, bem desfocado: só a cor e o volume passam pelo vidro
+  c.save(); if (FILTER_OK) { c.filter = `blur(${clamp(18 * z * DPR, 10, 60).toFixed(0)}px)`; c.globalAlpha = 0.85; } else c.globalAlpha = 0.07;
   drawEl(c, rcMain, e); c.restore();
   if (LINEAR.includes(e.type)) return;
-  const b = bounds(e);
-  // vidro fosco por cima: forma e cor ainda sugerem um bloco, mas nenhuma palavra fica legível
-  const frost = new Path2D(roundRectPath(b.x - 8, b.y - 8, b.w + 16, b.h + 16, 18));
-  c.fillStyle = rgba(PAL.surface, FILTER_OK ? 0.82 : 0.96); c.fill(frost);
-  c.strokeStyle = PAL.line; c.lineWidth = 1 / z; c.stroke(frost);
-  const r = clamp(Math.min(b.w, b.h) * 0.22, 12 / z, 22 / z), cx = b.x + b.w / 2, cy = b.y + b.h / 2;
-  c.fillStyle = PAL.accent; c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.fill();
-  c.fillStyle = '#fff'; c.font = `700 ${r * 1.15}px ${SYS}`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('?', cx, cy + r * 0.06);
+  const b = bounds(e), col = veilColor(e), r = clamp(Math.min(b.w, b.h) / 4, 8, 20);
+  const glass = new Path2D(roundRectPath(b.x - 5, b.y - 5, b.w + 10, b.h + 10, r));
+  c.save();
+  c.shadowColor = rgba(col, PAL.dark ? 0.35 : 0.28); c.shadowBlur = 22; c.shadowOffsetY = 6;
+  c.fillStyle = rgba(PAL.surface, FILTER_OK ? 0.5 : 0.93); c.fill(glass); c.restore();
+  const g = c.createLinearGradient(b.x, b.y, b.x + b.w, b.y + b.h);
+  g.addColorStop(0, rgba(col, PAL.dark ? 0.34 : 0.26)); g.addColorStop(0.55, rgba(col, PAL.dark ? 0.16 : 0.1)); g.addColorStop(1, rgba(col, PAL.dark ? 0.28 : 0.2));
+  c.fillStyle = g; c.fill(glass);
+  // brilho de vidro no topo
+  const hl = c.createLinearGradient(0, b.y - 5, 0, b.y + Math.min(b.h, 60));
+  hl.addColorStop(0, `rgba(255,255,255,${PAL.dark ? 0.12 : 0.55})`); hl.addColorStop(1, 'rgba(255,255,255,0)');
+  c.fillStyle = hl; c.fill(glass);
+  c.strokeStyle = rgba(col, 0.5); c.lineWidth = 1.5; c.stroke(glass);
+  // selo no centro: "?" na apresentação, olho riscado para quem edita
+  const s = clamp(Math.min(b.w, b.h) * 0.42, 22, 46), cx = b.x + b.w / 2, cy = b.y + b.h / 2;
+  c.save(); c.shadowColor = rgba(col, 0.45); c.shadowBlur = 12; c.shadowOffsetY = 3;
+  c.fillStyle = col; c.beginPath(); c.arc(cx, cy, s / 2, 0, Math.PI * 2); c.fill(); c.restore();
+  c.strokeStyle = 'rgba(255,255,255,.75)'; c.lineWidth = 2; c.beginPath(); c.arc(cx, cy, s / 2 - 1, 0, Math.PI * 2); c.stroke();
+  const ink = lum(String(col).startsWith('#') && col.length === 7 ? col : '#007AFF') > 0.6 ? '#1D1D1F' : '#FFFFFF';
+  if (!author) { c.fillStyle = ink; c.font = `800 ${s * 0.56}px ${SYS}`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('?', cx, cy + s * 0.04); }
+  else {
+    c.strokeStyle = ink; c.lineWidth = Math.max(1.6, s * 0.07); c.lineCap = 'round';
+    c.beginPath(); c.ellipse(cx, cy, s * 0.26, s * 0.16, 0, 0, Math.PI * 2); c.stroke();
+    c.beginPath(); c.arc(cx, cy, s * 0.07, 0, Math.PI * 2); c.fillStyle = ink; c.fill();
+    c.beginPath(); c.moveTo(cx - s * 0.27, cy + s * 0.24); c.lineTo(cx + s * 0.27, cy - s * 0.24); c.stroke();
+  }
 }
 function veilBadge(c, e) {
   const b = bounds(e), z = S.cam.z, r = 11 / z, cx = b.x + b.w, cy = b.y;
@@ -1423,7 +1456,7 @@ function draw() {
     const b = bounds(e);
     if (b.x > vx + vw + 60 || b.y > vy + vh + 60 || b.x + b.w < vx - 60 || b.y + b.h < vy - 60) continue;
     if (S.presenting && isVeiled(e)) { drawVeiled(ctx, e); continue; }
-    if (!S.presenting && e.veil) { if (S.sel.has(e.id) || S.editing === e.id) drawEl(ctx, rcMain, e); else drawVeiled(ctx, e); veilBadge(ctx, e); continue; }
+    if (!S.presenting && e.veil) { if (S.sel.has(e.id) || S.editing === e.id) { drawEl(ctx, rcMain, e); veilBadge(ctx, e); } else drawVeiled(ctx, e, true); continue; }
     const ra = S.revealAt.get(e.id);
     if (ra && now - ra < 560) { const k = 1 - (now - ra) / 560; ctx.save(); if (FILTER_OK) ctx.filter = `blur(${(14 * k * k).toFixed(1)}px)`; ctx.globalAlpha = 1 - k * 0.5; drawEl(ctx, rcMain, e); ctx.restore(); req(); continue; }
     drawEl(ctx, rcMain, e);
@@ -3162,13 +3195,17 @@ function positionBack() {
   const main = S.els.find((e) => e.role === 'title') || solid.filter((e) => e.type === 'text').sort((a, b) => b.fs - a.fs)[0] || solid[0];
   const { trail } = boardOf(S.stack); const p = active();
   const parent = S.stack.length > 1 ? (blockLabel(trail[trail.length - 2]) || 'bloco anterior') : (p && p.name) || 'quadro principal';
-  const label = 'Voltar para ' + parent.slice(0, 28);
-  if (btn.dataset.label !== label) { btn.dataset.label = label; btn.innerHTML = `<svg class="i" viewBox="0 0 22 22"><path d="M13 5l-6 6 6 6"/></svg><span>${esc(label)}</span>`; btn.title = label + ' (Esc)'; }
+  const label = 'Voltar para ' + parent.slice(0, 40);
+  if (btn.dataset.label !== label) {
+    btn.dataset.label = label; btn.title = label + ' (Esc)'; btn.setAttribute('aria-label', label);
+    btn.innerHTML = `<span class="bb-in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10.5a7.2 7.2 0 0 1 12.4-4.6L19.5 8"/><path d="M19.5 3.2V8h-4.8"/><path d="M19 13.5a7.2 7.2 0 0 1-12.4 4.6L4.5 16"/><path d="M4.5 20.8V16h4.8"/></svg><b>Voltar</b><small>${esc(parent.slice(0, 22))}</small></span>`;
+  }
   btn.hidden = false;
-  const z = S.cam.z; let cy, rx;
-  if (main) { const b = bounds(main); cy = (b.y + b.h / 2) * z + S.cam.y; rx = b.x * z + S.cam.x - 18; }
+  const z = S.cam.z, w = clamp(96 * z, 70, 130), h = w * 1.32;
+  btn.style.setProperty('--bw', w + 'px');
+  let cy, rx;
+  if (main) { const b = bounds(main); cy = (b.y + b.h / 2) * z + S.cam.y; rx = b.x * z + S.cam.x - 30 * Math.max(z, 0.6); }
   else { cy = H / 2; rx = W / 2 - 40; }
-  const w = btn.offsetWidth, h = btn.offsetHeight;
   btn.style.left = clamp(rx - w, 12, Math.max(12, W - w - 12)) + 'px'; btn.style.top = clamp(cy - h / 2, 66, Math.max(66, H - h - 70)) + 'px';
 }
 function renderCrumbs() {
