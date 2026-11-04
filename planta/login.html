@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Entrar · Planta</title>
+<style>
+/* Tela única de login: o mesmo vidro e as mesmas cores do Planta, com a tela de pontos ao fundo. */
+:root{
+  --bg:#FBFBFD; --surface:#FFFFFF; --fg:#1D1D1F; --fg-2:#6E6E73; --fg-3:#A1A1A6; --line:rgba(60,60,67,.12); --line-2:rgba(60,60,67,.2);
+  --dot:rgba(60,60,67,.16); --accent:#007AFF; --accent-soft:rgba(0,122,255,.12); --red:#FF3B30;
+  --c-blue:#007AFF; --c-purple:#AF52DE; --c-pink:#FF2D55; --c-orange:#FF9500; --c-yellow:#FFCC00; --c-green:#34C759;
+  --glass:rgba(255,255,255,.82); --shadow:0 2px 6px rgba(0,0,0,.05),0 30px 70px rgba(0,0,0,.12);
+  --f-ui:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue","Segoe UI",Roboto,sans-serif;
+  --f-display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue","Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#141416; --surface:#1C1C1E; --fg:#F5F5F7; --fg-2:#A1A1A6; --fg-3:#6E6E73; --line:rgba(235,235,245,.1); --line-2:rgba(235,235,245,.18);
+  --dot:rgba(235,235,245,.13); --accent:#0A84FF; --accent-soft:rgba(10,132,255,.2); --red:#FF453A;
+  --glass:rgba(32,32,35,.8); --shadow:0 2px 6px rgba(0,0,0,.4),0 30px 70px rgba(0,0,0,.6); color-scheme:dark;
+}}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-ui);-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(var(--dot) 1.2px,transparent 1.3px);background-size:24px 24px;
+  display:grid;place-items:center;padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px))}
+.card{width:min(400px,100%);background:var(--glass);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);
+  border-radius:26px;box-shadow:0 0 0 1px var(--line),var(--shadow);padding:34px 30px 28px;animation:rise .35s cubic-bezier(.2,.9,.3,1.1)}
+@keyframes rise{from{opacity:0;transform:translateY(10px) scale(.98)}}
+.mark{width:56px;height:56px;border-radius:17px;display:grid;place-items:center;margin-bottom:20px;
+  background:conic-gradient(from 210deg,var(--c-blue),var(--c-purple),var(--c-pink),var(--c-orange),var(--c-yellow),var(--c-green),var(--c-blue));box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+.mark svg{width:30px;height:30px;stroke:#fff;stroke-width:1.8;fill:none}
+h1{font-family:var(--f-display);font-size:28px;letter-spacing:-.025em;margin:0 0 6px}
+p.sub{margin:0 0 24px;color:var(--fg-2);font-size:15px;line-height:1.5}
+label{display:block;font-size:12px;font-weight:600;color:var(--fg-2);margin:0 0 6px}
+input{width:100%;font:inherit;font-size:16px;color:var(--fg);padding:13px 14px;border-radius:13px;border:0;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-2);outline:none;transition:box-shadow .15s}
+input:focus{box-shadow:inset 0 0 0 2px var(--accent)}
+.field{margin-bottom:14px}
+.pw{position:relative}
+.pw button{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--fg-2);font:inherit;font-size:12.5px;font-weight:600;padding:6px 8px;border-radius:8px;cursor:pointer}
+.pw button:hover{background:var(--accent-soft);color:var(--accent)}
+.go{width:100%;margin-top:8px;border:0;cursor:pointer;font:inherit;font-size:15.5px;font-weight:600;color:#fff;background:var(--accent);padding:13px;border-radius:13px;box-shadow:0 6px 18px rgba(0,122,255,.3);transition:transform .12s,opacity .15s}
+.go:active{transform:scale(.98)}
+.go:disabled{opacity:.6;cursor:default}
+.go:focus-visible,.pw button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.err{color:var(--red);font-size:13.5px;line-height:1.45;margin:12px 0 0;min-height:1em}
+.foot{margin-top:22px;padding-top:16px;border-top:1px solid var(--line);color:var(--fg-3);font-size:12.5px;line-height:1.5;text-align:center}
+@media (prefers-reduced-motion:reduce){.card{animation:none}}
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="mark" aria-hidden="true"><svg viewBox="0 0 18 18"><rect x="2.5" y="2.5" width="5.5" height="5.5" rx="1.5"/><circle cx="12.75" cy="5.25" r="2.75"/><path d="M5.25 10.5v5M10 13h5.5M13.75 10v6"/></svg></div>
+  <h1>Entrar no Planta</h1>
+  <p class="sub">Seus projetos, quadros e páginas, do jeito que você deixou.</p>
+  <form id="f" novalidate>
+    <div class="field"><label for="email">E-mail</label><input id="email" type="email" autocomplete="username" inputmode="email" required></div>
+    <div class="field"><label for="pass">Senha</label><div class="pw"><input id="pass" type="password" autocomplete="current-password" required><button type="button" id="show" aria-label="Mostrar senha">Mostrar</button></div></div>
+    <button class="go" id="go" type="submit">Entrar</button>
+    <p class="err" id="err" role="alert"></p>
+  </form>
+  <div class="foot">Acesso por convite. Esqueceu a senha? Fale com quem te convidou.</div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script>
+(async () => {
+  const $ = (s) => document.querySelector(s);
+  const cfg = window.PLANTA_CONFIG || {};
+  const err = (t) => ($('#err').textContent = t);
+  $('#show').onclick = () => { const p = $('#pass'); const on = p.type === 'password'; p.type = on ? 'text' : 'password'; $('#show').textContent = on ? 'Ocultar' : 'Mostrar'; $('#show').setAttribute('aria-label', on ? 'Ocultar senha' : 'Mostrar senha'); };
+  if (!cfg.url || !cfg.anonKey || !window.supabase) { err('O Planta está em configuração. Volte em alguns minutos.'); $('#go').disabled = true; return; }
+  const sb = window.supabase.createClient(cfg.url, cfg.anonKey);
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) { location.replace('./'); return; }
+  $('#email').focus();
+  $('#f').addEventListener('submit', async (e) => {
+    e.preventDefault(); err('');
+    const email = $('#email').value.trim(), password = $('#pass').value;
+    if (!email || !password) { err('Preencha o e-mail e a senha.'); return; }
+    $('#go').disabled = true; $('#go').textContent = 'Entrando…';
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) {
+      $('#go').disabled = false; $('#go').textContent = 'Entrar';
+      err(/invalid/i.test(error.message) ? 'E-mail ou senha incorretos.' : /confirm/i.test(error.message) ? 'Este e-mail ainda não foi confirmado.' : 'Não deu para entrar agora. Tente de novo em instantes.');
+      return;
+    }
+    location.replace('./');
+  });
+})();
+</script>
+</body>
+</html>
